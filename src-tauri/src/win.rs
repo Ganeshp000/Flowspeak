@@ -181,11 +181,14 @@ fn clean_transcript(raw: &str) -> String {
         .get()
         .map(|d| d.lock().unwrap().prefilter(&raw_norm, 15))
         .unwrap_or_default();
+    let active_transform = settings.transforms.iter().find(|t| t.is_active).map(|t| t.prompt.clone());
     let ctx = CleanupContext {
         level,
         vocab,
         app_bundle_id: foreground_app(),
         custom_style: Some(settings.custom_style.clone()),
+        snippets: settings.snippets.clone(),
+        active_transform,
         ..Default::default()
     };
     let run_local = || -> Option<anyhow::Result<String>> {

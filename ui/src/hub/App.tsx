@@ -8,10 +8,11 @@ import { Insights } from "./Insights";
 import { DictionaryPane } from "./DictionaryPane";
 import { SettingsPane } from "./SettingsPane";
 import { Help } from "./Help";
-import { ComingSoon } from "./ComingSoon";
 import { Style } from "./Style";
 import { Scratchpad } from "./Scratchpad";
-import type { IconName } from "./icons";
+import { Snippets } from "./Snippets";
+import { Transforms } from "./Transforms";
+
 import {
   getSettings,
   setSettings,
@@ -100,20 +101,6 @@ function ErrorBanner({
   );
 }
 
-// Placeholder screens that are routed but not yet built.
-const SOON: Partial<Record<Page, { icon: IconName; title: string; desc: string }>> = {
-  snippets: {
-    icon: "snippets",
-    title: "Snippets",
-    desc: "Save reusable phrases and expand them by voice — signatures, addresses, boilerplate.",
-  },
-  transforms: {
-    icon: "transforms",
-    title: "Transforms",
-    desc: "Turn a quick spoken thought into an email, a summary, or a to-do with one command.",
-  },
-};
-
 export function App() {
   const [page, setPage] = useState<Page>("home");
   const [settings, setLocalSettings] = useState<Settings>(DEFAULT_SETTINGS);
@@ -172,8 +159,6 @@ export function App() {
     return <Onboarding status={status} refresh={refresh} onEnter={() => setEntered(true)} />;
   }
 
-  const soon = SOON[page];
-
   // Two independent reasons for the post-onboarding banner: Accessibility
   // lapsed after entry (checked live against `status`, not just the one-time
   // onboarding gate), or the pipeline reported some other failure (hotkey tap
@@ -225,7 +210,8 @@ export function App() {
             {page === "help" && <Help />}
             {page === "style" && <Style />}
             {page === "scratchpad" && <Scratchpad />}
-            {soon && <ComingSoon icon={soon.icon} title={soon.title} desc={soon.desc} />}
+            {page === "snippets" && <Snippets />}
+            {page === "transforms" && <Transforms />}
           </div>
         </main>
       </div>

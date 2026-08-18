@@ -19,6 +19,7 @@ mod imp {
 
     #[link(name = "CoreGraphics", kind = "framework")]
     extern "C" {
+        fn CGEventSourceCreate(stateID: i32) -> CGEventSourceRef;
         fn CGEventCreateKeyboardEvent(
             source: CGEventSourceRef,
             keycode: u16,
@@ -54,6 +55,7 @@ mod imp {
     const KCG_HID_EVENT_TAP: u32 = 0;
     const KCG_FLAG_MASK_COMMAND: u64 = 0x0010_0000;
     const KEYCODE_V: u16 = 9;
+    const KEYCODE_CMD: u16 = 55;
 
     /// Whether the app has Accessibility permission. This one grant governs BOTH the
     /// global Fn CGEventTap (untrusted taps are silently limited to frontmost-only)
@@ -82,15 +84,22 @@ mod imp {
 
     fn post_cmd_v() {
         unsafe {
-            let down = CGEventCreateKeyboardEvent(null(), KEYCODE_V, true);
-            CGEventSetFlags(down, KCG_FLAG_MASK_COMMAND);
-            CGEventPost(KCG_HID_EVENT_TAP, down);
-            CFRelease(down as *const c_void);
+            // kCGEventSourceStateHIDSystemState = 1
+            // This is the exact pattern used by the 'enigo' library, which is known
+            // to work flawlessly across macOS without requiring Automation permissions.
+            let src = CGEventSourceCreate(1);
+            
+            let v_down = CGEventCreateKeyboardEvent(src, KEYCODE_V, true);
+            CGEventSetFlags(v_down, KCG_FLAG_MASK_COMMAND);
+            CGEventPost(KCG_HID_EVENT_TAP, v_down);
+            CFRelease(v_down as *const c_void);
 
-            let up = CGEventCreateKeyboardEvent(null(), KEYCODE_V, false);
-            CGEventSetFlags(up, KCG_FLAG_MASK_COMMAND);
-            CGEventPost(KCG_HID_EVENT_TAP, up);
-            CFRelease(up as *const c_void);
+            let v_up = CGEventCreateKeyboardEvent(src, KEYCODE_V, false);
+            CGEventSetFlags(v_up, KCG_FLAG_MASK_COMMAND);
+            CGEventPost(KCG_HID_EVENT_TAP, v_up);
+            CFRelease(v_up as *const c_void);
+            
+            CFRelease(src as *const c_void);
         }
     }
 
@@ -105,14 +114,19 @@ mod imp {
         let mut cb = Clipboard::new()?;
         let saved = cb.get_text().ok();
         cb.set_text(text.to_string())?;
+        
         // Give the pasteboard a moment to settle before the paste keystroke.
-        std::thread::sleep(Duration::from_millis(60));
-        post_cmd_v();
-        // Let the target consume the paste before we restore the old clipboard.
         std::thread::sleep(Duration::from_millis(150));
+        
+        post_cmd_v();
+        
+        // Let the target consume the paste before we restore the old clipboard.
+        // Heavy web apps need this time to read the clipboard asynchronously.
+        std::thread::sleep(Duration::from_millis(600));
         if let Some(prev) = saved {
             let _ = cb.set_text(prev);
         }
+        
         Ok(())
     }
 }

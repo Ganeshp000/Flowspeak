@@ -5,6 +5,18 @@
 export type CleanupMode = "raw" | "local" | "open_ai" | "anthropic";
 export type CleanupLevel = "none" | "light" | "medium" | "high";
 
+export interface Snippet {
+  shortcut: string;
+  replacement: string;
+}
+
+export interface Transform {
+  id: string;
+  name: string;
+  prompt: string;
+  is_active: boolean;
+}
+
 export interface Settings {
   cleanup_mode: CleanupMode;
   cleanup_level: CleanupLevel;
@@ -15,6 +27,8 @@ export interface Settings {
   anthropic_model: string;
   sound_on_start: boolean;
   custom_style: string;
+  snippets: Snippet[];
+  transforms: Transform[];
 }
 
 export interface Status {
@@ -59,6 +73,8 @@ export const DEFAULT_SETTINGS: Settings = {
   anthropic_model: "claude-3-haiku-20240307",
   sound_on_start: true,
   custom_style: "",
+  snippets: [],
+  transforms: [],
 };
 
 async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {

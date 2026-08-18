@@ -180,28 +180,43 @@ pub fn format_mode_for_app(bundle_id: &str) -> Option<&'static str> {
 }
 
 /// Assemble the final system prompt: the shared prompt, the level modifier, and
-/// (when the paste target is known) the per-app Formatting Mode, and the user custom style.
-pub fn system_for(level: super::levels::CleanupLevel, app_bundle_id: Option<&str>, custom_style: Option<&str>) -> String {
+/// (when the paste target is known) the per-app Formatting Mode, custom style, snippets, and transform.
+pub fn system_for(ctx: &super::CleanupContext) -> String {
     let mut s = SYSTEM_PROMPT.to_string();
-    let modifier = level.modifier();
+    let modifier = ctx.level.modifier();
     if !modifier.is_empty() {
         s.push_str("\n\n");
         s.push_str(modifier);
     }
-    if let Some(mode) = app_bundle_id.and_then(format_mode_for_app) {
+    if let Some(mode) = ctx.app_bundle_id.as_deref().and_then(format_mode_for_app) {
         s.push_str("\n\n# Formatting Mode (follow this for structure and tone)\n");
         s.push_str(mode);
     }
-    if let Some(style) = custom_style {
+    if let Some(style) = ctx.custom_style.as_deref() {
         if !style.trim().is_empty() {
             s.push_str("\n\n# Custom User Style (CRITICAL: ALWAYS FOLLOW THIS)\n");
             s.push_str(style.trim());
         }
+    }
+    if let Some(transform) = ctx.active_transform.as_deref() {
+        if !transform.trim().is_empty() {
+            s.push_str("\n\n# Active Transformation (CRITICAL: REWRITE THE TEXT TO MATCH THIS EXACT FORMAT/COMMAND)\n");
+            s.push_str(transform.trim());
+        }
+    }
+    if !ctx.snippets.is_empty() {
+        s.push_str("\n\n# Text Expansion Snippets\n");
+        s.push_str("If the user's dictated text includes any of the following exact shortcut phrases, you MUST replace the shortcut phrase with its corresponding replacement text exactly. Do not modify the replacement text.\n<SNIPPETS>\n");
+        for snippet in &ctx.snippets {
+            s.push_str(&format!("Shortcut: \"{}\" -> Replacement: \"{}\"\n", snippet.shortcut, snippet.replacement));
+        }
+        s.push_str("</SNIPPETS>\n");
     }
     s
 }
 
 /// Assemble the final system prompt for a level with no app adaptation.
 pub fn system_for_level(level: super::levels::CleanupLevel) -> String {
-    system_for(level, None, None)
+    let ctx = super::CleanupContext { level, ..Default::default() };
+    system_for(&ctx)
 }

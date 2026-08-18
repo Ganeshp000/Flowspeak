@@ -347,11 +347,14 @@ mod imp {
         if let Some(app) = app_bundle_id.as_deref() {
             eprintln!("[flowspeak] cleanup target app: {app}");
         }
+        let active_transform = settings.transforms.iter().find(|t| t.is_active).map(|t| t.prompt.clone());
         let ctx = CleanupContext {
             level,
             vocab,
             app_bundle_id,
             custom_style: Some(settings.custom_style.clone()),
+            snippets: settings.snippets.clone(),
+            active_transform,
             ..Default::default()
         };
         // Run the on-device model with the same prompt + per-app formatting.

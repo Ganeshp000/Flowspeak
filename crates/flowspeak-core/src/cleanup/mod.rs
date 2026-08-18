@@ -45,6 +45,10 @@ pub struct CleanupContext {
     pub window_context: Option<String>,
     /// Custom style instructions from user settings.
     pub custom_style: Option<String>,
+    /// Active snippets for text expansion.
+    pub snippets: Vec<crate::settings::Snippet>,
+    /// The currently active transform instruction, if any.
+    pub active_transform: Option<String>,
 }
 
 impl Default for CleanupContext {
@@ -55,6 +59,8 @@ impl Default for CleanupContext {
             app_bundle_id: None,
             window_context: None,
             custom_style: None,
+            snippets: Vec::new(),
+            active_transform: None,
         }
     }
 }
@@ -112,7 +118,7 @@ pub fn build_messages(raw: &str, ctx: &CleanupContext) -> Vec<CleanupMsg> {
     let mut msgs = Vec::with_capacity(prompts::FEW_SHOT.len() * 2 + 2);
     msgs.push(CleanupMsg {
         role: "system",
-        content: prompts::system_for(ctx.level, ctx.app_bundle_id.as_deref(), ctx.custom_style.as_deref()),
+        content: prompts::system_for(ctx),
     });
     for (input, output) in prompts::FEW_SHOT {
         msgs.push(CleanupMsg { role: "user", content: wrap_transcript(input) });

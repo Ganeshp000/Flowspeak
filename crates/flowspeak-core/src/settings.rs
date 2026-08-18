@@ -22,6 +22,20 @@ pub enum CleanupMode {
     Anthropic,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct Snippet {
+    pub shortcut: String,
+    pub replacement: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct Transform {
+    pub id: String,
+    pub name: String,
+    pub prompt: String,
+    pub is_active: bool,
+}
+
 /// Persisted user configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Settings {
@@ -39,6 +53,12 @@ pub struct Settings {
     /// Custom instructions for tone and style (Phase 1)
     #[serde(default)]
     pub custom_style: String,
+    /// User-defined text expansion snippets (Phase 2)
+    #[serde(default)]
+    pub snippets: Vec<Snippet>,
+    /// User-defined explicit format transformations (Phase 2)
+    #[serde(default)]
+    pub transforms: Vec<Transform>,
 }
 
 impl Default for Settings {
@@ -51,6 +71,8 @@ impl Default for Settings {
             anthropic_model: "claude-haiku-4-5".to_string(),
             sound_on_start: true,
             custom_style: String::new(),
+            snippets: Vec::new(),
+            transforms: Vec::new(),
         }
     }
 }
