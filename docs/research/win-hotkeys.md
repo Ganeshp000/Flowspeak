@@ -149,7 +149,7 @@ Confidence: **[OBS]** = observed in a cited primary source; **[INF]** = inferred
 
 **Threading:** one dedicated **hotkey thread** = `SetWindowsHookExW(WH_KEYBOARD_LL, proc, hInstance, 0)` + a `GetMessageW` loop. Callback is allocation-free/lock-free: read `vkCode`/`flags`, update an atomic state machine, push a token to an `mpsc`/`crossbeam` channel consumed by the app thread, then return (1 to suppress owned keys, else `CallNextHookEx`). Keep callback in microseconds to dodge `LowLevelHooksTimeout` silent-removal.
 
-**Ignore self-injection:** drop events where `flags & LLKHF_INJECTED` **and** `dwExtraInfo == WHIMPR_SIGNATURE` (magic stamped on your own `SendInput`).
+**Ignore self-injection:** drop events where `flags & LLKHF_INJECTED` **and** `dwExtraInfo == FLOWSPEAK_SIGNATURE` (magic stamped on your own `SendInput`).
 
 **State machine (parity with Mac hold / double-tap-lock / Esc-cancel):**
 - `Idle` → all trigger modifiers of the binding go down (e.g. LCtrl+LWin both pressed) ⇒ start a hold timer (`holdThreshold ≈ 180–250 ms`, cf. OpenSuperWhisper 0.3 s / VoiceInk 0.5 s hybrid) and mark `Armed`.

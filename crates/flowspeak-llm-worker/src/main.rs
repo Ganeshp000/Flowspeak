@@ -4,7 +4,7 @@
 //! `{"system": "...", "user": "..."}` → `{"text": "..."}` on stdout. The FlowSpeak
 //! app spawns this and keeps it warm so cleanup is fast and fully offline.
 //!
-//! Usage: `flowspeak-llm-worker <model.gguf>` (or WHIMPR_LLM_MODEL env var).
+//! Usage: `flowspeak-llm-worker <model.gguf>` (or FLOWSPEAK_LLM_MODEL env var).
 
 use std::io::{BufRead, Write};
 use std::num::NonZeroU32;
@@ -51,8 +51,8 @@ struct Response {
 fn main() -> anyhow::Result<()> {
     let model_path = std::env::args()
         .nth(1)
-        .or_else(|| std::env::var("WHIMPR_LLM_MODEL").ok())
-        .context("model path required (argv[1] or WHIMPR_LLM_MODEL)")?;
+        .or_else(|| std::env::var("FLOWSPEAK_LLM_MODEL").ok())
+        .context("model path required (argv[1] or FLOWSPEAK_LLM_MODEL)")?;
 
     let backend = LlamaBackend::init()?;
     // Offload everything to the Apple GPU (Metal) — capped by what fits.

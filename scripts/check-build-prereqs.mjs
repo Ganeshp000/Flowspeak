@@ -12,7 +12,7 @@
 //
 // Exit code 0 = safe to build, 1 = will fail partway through `cargo build`.
 //
-// Testing hook (not for normal use): set WHIMPR_FAKE_CLANG_VERSION to a
+// Testing hook (not for normal use): set FLOWSPEAK_FAKE_CLANG_VERSION to a
 // version string (e.g. "22.0.0" or "18.1.1") to exercise both outcomes
 // without needing a real LLVM install of that version.
 
@@ -55,16 +55,16 @@ function parseClangVersion(versionOutput) {
 }
 
 function main() {
-  console.log(bold("WhimprFlow build preflight: LLVM/clang version check"));
+  console.log(bold("FlowSpeak build preflight: LLVM/clang version check"));
   console.log("");
 
-  const fake = process.env.WHIMPR_FAKE_CLANG_VERSION;
+  const fake = process.env.FLOWSPEAK_FAKE_CLANG_VERSION;
   let versionOutput;
   let source;
 
   if (fake) {
-    versionOutput = `clang version ${fake}\n(simulated via WHIMPR_FAKE_CLANG_VERSION for testing)`;
-    source = "WHIMPR_FAKE_CLANG_VERSION (test override)";
+    versionOutput = `clang version ${fake}\n(simulated via FLOWSPEAK_FAKE_CLANG_VERSION for testing)`;
+    source = "FLOWSPEAK_FAKE_CLANG_VERSION (test override)";
   } else if (process.env.LIBCLANG_PATH && existsSync(process.env.LIBCLANG_PATH)) {
     // LIBCLANG_PATH is set — most likely the documented libclang side-load
     // workaround (a bare .dll with no clang binary next to it), or a

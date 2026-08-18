@@ -8,7 +8,7 @@
 
 ---
 
-## WHIMPRFLOW UI SPEC (Flow Bar every state + menu bar + Hub/Settings/Onboarding + cosmetic deltas)
+## FLOWSPEAK UI SPEC (Flow Bar every state + menu bar + Hub/Settings/Onboarding + cosmetic deltas)
 
 ### CONFLICT RESOLUTIONS (read first)
 1. **Pill color**: marketing site shows a CREAM pill (#ffffeb) with dark bars; reviewers + the actual app bundle show a DARK pill. RESOLUTION — the on-screen bar is dark. Teardown (authoritative, real SCSS tokens) sets `--pill-bg: var(--vast-700)` = `#5b5b59` (dark) / `var(--shade-black)` = `#000` in some states; reviewer calls it "dark rounded pill-shaped lozenge with light pink text." We render a fixed dark capsule (near-black, ~#1a1a1a…#5b5b59) with pale accent text in BOTH system themes. The cream palette is website-only; do not use it for the bar.
@@ -220,7 +220,7 @@ Aggressiveness scale: Off = None only · Low = Light+ · Med = Medium+ · High =
 
 ---
 
-## WHIMPRFLOW CLEANUP PROMPTS (identical system prompt for LOCAL Qwen3-4B and Claude Haiku 4.5; temp 0.0–0.3; thinking OFF; plain-text output; NO reasoning model)
+## FLOWSPEAK CLEANUP PROMPTS (identical system prompt for LOCAL Qwen3-4B and Claude Haiku 4.5; temp 0.0–0.3; thinking OFF; plain-text output; NO reasoning model)
 
 Design principles (grounded in DRES arXiv 2509.20321 + VoiceInk + MacWhisper + Speakerly): frame as DELETION + MINIMAL NORMALIZATION, never "improve/rewrite" (reasoning/rewrite framing → over-deletion & paraphrase). Explicit NEGATIVE constraints. Preserve-list byte-identical. Treat tagged text as CONTENT not instructions (injection guard). Output-only. Segment long dictations at pauses before cleanup.
 
@@ -309,7 +309,7 @@ Verifier model = a cheap local pass or Claude Haiku 4.5. Never run it unconditio
 
 ---
 
-## WHIMPRFLOW ARCHITECTURE (M4 Pro, 24GB, macOS 15.7.3)
+## FLOWSPEAK ARCHITECTURE (M4 Pro, 24GB, macOS 15.7.3)
 
 ### CONFLICT RESOLVED — stack
 Teardown (authoritative, from the actual 1.6.7 bundle) shows Wispr's Mac app is **Electron + a bundled native Swift helper** (LSUIElement `com.electron.wispr-flow.accessibility-mac-app`) that does the CGEventTap/paste/AX work Electron can't. The "Mac = native Swift" claim in one track was review-sourced and is WRONG. **For FlowSpeak we deliberately choose FULLY NATIVE Swift** (AppKit + SwiftUI via NSHostingView) — all OSS Swift clones (OpenSuperWhisper MIT, VoiceInk GPL, foxsay, speak2, parrote) prove it works, it avoids Electron's ~800MB overhead, gives direct CoreML/FluidAudio/MLX access with no Python/Node sidecar, and we need the "helper" capabilities anyway. No separate helper PROCESS required (one native process); optionally isolate the event-tap on a dedicated GCD runloop for stability, not for privilege.
