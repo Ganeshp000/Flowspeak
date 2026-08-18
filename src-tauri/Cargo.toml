@@ -26,6 +26,7 @@ serde_json = { workspace = true }
 tracing = { workspace = true }
 anyhow = { workspace = true }
 arboard = "3"
+enigo = "0.1"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 # Windows platform layer (low-level keyboard hook, SendInput paste, foreground-app
