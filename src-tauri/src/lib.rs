@@ -90,8 +90,31 @@ fn build_hub(app: &tauri::App) -> tauri::Result<WebviewWindow> {
         .build()
 }
 
+fn show_or_create_hub(app: &tauri::AppHandle) {
+    if let Some(w) = app.get_webview_window(HUB_LABEL) {
+        let _ = w.show();
+        let _ = w.unminimize();
+        let _ = w.set_focus();
+    } else {
+        if let Ok(w) = WebviewWindowBuilder::new(app, HUB_LABEL, WebviewUrl::App("index.html".into()))
+            .title("FlowSpeak")
+            .inner_size(920.0, 640.0)
+            .min_inner_size(720.0, 480.0)
+            .visible(true)
+            .build()
+        {
+            let _ = w.show();
+            let _ = w.set_focus();
+        }
+    }
+}
+
 fn emit_bar_state(app: &tauri::AppHandle, state: &'static str) {
+    let _ = app.emit("flowspeak://flowbar/state", BarStatePayload { state });
     let _ = app.emit_to(OVERLAY_LABEL, "flowspeak://flowbar/state", BarStatePayload { state });
+    if let Some(w) = app.get_webview_window(OVERLAY_LABEL) {
+        let _ = w.show();
+    }
 }
 
 #[tauri::command]
@@ -279,14 +302,9 @@ pub fn run() {
 
             let mut tray = TrayIconBuilder::new()
                 .menu(&menu)
-                .show_menu_on_left_click(false)
+                .show_menu_on_left_click(true)
                 .on_menu_event(|app, event| match event.id.as_ref() {
-                    "open" => {
-                        if let Some(w) = app.get_webview_window(HUB_LABEL) {
-                            let _ = w.show();
-                            let _ = w.set_focus();
-                        }
-                    }
+                    "open" => show_or_create_hub(app),
                     "demo_rec" => emit_bar_state(app, "recording"),
                     "demo_idle" => emit_bar_state(app, "idle"),
                     "quit" => app.exit(0),
@@ -298,6 +316,15 @@ pub fn run() {
             tray.build(app)?;
 
             Ok(())
+        })
+        .on_window_event(|window, event| match event {
+            tauri::WindowEvent::CloseRequested { api, .. } => {
+                if window.label() == HUB_LABEL {
+                    let _ = window.hide();
+                    api.prevent_close();
+                }
+            }
+            _ => {}
         })
         .run(tauri::generate_context!())
         .expect("error while running FlowSpeak");
