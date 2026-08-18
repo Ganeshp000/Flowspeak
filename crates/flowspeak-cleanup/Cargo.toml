@@ -1,0 +1,15 @@
+[package]
+name = "flowspeak-cleanup"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# Cloud cleanup providers implementing flowspeak-core's CleanupProvider trait.
+# OpenAI (default cloud) today; Anthropic and local llama layer in behind the trait.
+[dependencies]
+flowspeak-core = { path = "../flowspeak-core" }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { version = "0.12", features = ["blocking", "json", "rustls-tls"], default-features = false }

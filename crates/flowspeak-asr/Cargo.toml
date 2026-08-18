@@ -1,0 +1,23 @@
+[package]
+name = "flowspeak-asr"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# Local speech-to-text. First engine: whisper.cpp via whisper-rs (Metal on macOS),
+# implementing the AsrEngine trait from flowspeak-core. Parakeet/FluidAudio is the
+# planned latency upgrade behind the same trait.
+[dependencies]
+flowspeak-core = { path = "../flowspeak-core" }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+hound = "3"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+whisper-rs = { version = "0.12", features = ["metal"] }
+
+# No GPU feature on Windows yet — CPU backend first, Vulkan/CUDA can follow.
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+whisper-rs = { version = "0.12" }

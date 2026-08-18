@@ -1,0 +1,25 @@
+[package]
+name = "flowspeak-llm-worker"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# Standalone local-LLM worker process. Kept a SEPARATE binary (not linked into the
+# Tauri app) because llama.cpp's ggml and whisper.cpp's ggml can't coexist in one
+# binary. The app spawns it and talks to it over stdio (one JSON request per line).
+[[bin]]
+name = "flowspeak-llm-worker"
+path = "src/main.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+llama-cpp-2 = { version = "0.1", features = ["metal"] }
+
+# No GPU feature on Windows yet — CPU backend first, Vulkan/CUDA can follow.
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+llama-cpp-2 = { version = "0.1" }

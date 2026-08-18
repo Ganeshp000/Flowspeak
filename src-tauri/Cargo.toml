@@ -1,0 +1,48 @@
+[package]
+name = "flowspeak-tauri"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "flowspeak_tauri_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+flowspeak-core = { path = "../crates/flowspeak-core" }
+flowspeak-ipc = { path = "../crates/flowspeak-ipc" }
+flowspeak-audio = { path = "../crates/flowspeak-audio" }
+flowspeak-asr = { path = "../crates/flowspeak-asr" }
+flowspeak-cleanup = { path = "../crates/flowspeak-cleanup" }
+keyring = "3"
+strsim = "0.11"
+tauri = { version = "2", features = ["tray-icon", "image-png", "macos-private-api"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+anyhow = { workspace = true }
+arboard = "3"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+# Windows platform layer (low-level keyboard hook, SendInput paste, foreground-app
+# detection). UNVERIFIED: written on macOS, never compiled or run on Windows.
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_System_Threading",
+    "Win32_System_LibraryLoader",
+    "Win32_System_ProcessStatus",
+] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+macos-accessibility-client = "0.0.1"
+# Frontmost-app detection (paste-target → per-app cleanup formatting). Already in
+# the tree via Tauri; declared here so we can call NSWorkspace directly.
+objc2-app-kit = { version = "0.3", features = ["NSWorkspace", "NSRunningApplication"] }
+objc2-foundation = { version = "0.3", features = ["NSString"] }
+objc2-av-foundation = { version = "0.3", features = ["AVCaptureDevice", "AVMediaFormat"] }

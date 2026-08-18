@@ -1,0 +1,12 @@
+[package]
+name = "flowspeak-audio"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# Microphone capture: default input device → mono f32 buffer + throttled RMS bars
+# for the pill waveform. Resampling to 16 kHz for ASR is applied on stop.
+[dependencies]
+cpal = "0.15"
+anyhow = { workspace = true }

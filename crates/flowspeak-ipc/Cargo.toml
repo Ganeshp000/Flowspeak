@@ -1,0 +1,13 @@
+[package]
+name = "flowspeak-ipc"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# Shared wire contract between the Tauri shell and the native sidecar process.
+# Deliberately dependency-light: both ends are Rust, so the enums ARE the schema.
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }

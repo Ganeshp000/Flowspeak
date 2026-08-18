@@ -1,0 +1,16 @@
+[package]
+name = "flowspeak-sidecar"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# The native sidecar process: global hotkey hook, text injection, secure-input
+# detection, accessibility context reads. This first cut is a minimal, validated
+# Fn-key detector (macOS CGEventTap) — the full IPC/injection/watchdog layers
+# are layered on once Fn detection is confirmed working on real hardware.
+[[bin]]
+name = "flowspeak-sidecar"
+path = "src/main.rs"
+
+[dependencies]

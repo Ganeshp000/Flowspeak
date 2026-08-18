@@ -1,0 +1,27 @@
+# Rust
+/target
+**/*.rs.bk
+
+# Node / frontend
+node_modules/
+ui/dist/
+ui/node_modules/
+
+# Tauri build output
+src-tauri/target/
+src-tauri/gen/
+
+# Models (downloaded separately — multi-GB, not committed)
+*.gguf
+*.bin
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Secrets — never commit. API keys live in the OS keychain, never in files.
+.env
+.env.*
+*.pem
