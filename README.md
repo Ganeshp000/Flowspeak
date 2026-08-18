@@ -1,5 +1,6 @@
 # FlowSpeak
 
+![FlowSpeak Dashboard](docs/app_screenshot.png)
 A **local-first, cross-platform voice dictation app** — hold a key, speak, and clean text lands wherever your cursor is. Speech is transcribed on-device with Whisper and cleaned up (filler removal, self-corrections, punctuation, lists/newlines) by a local LLM, with an optional cloud path. It re-creates the workflow of a Wispr-Flow-style dictation tool from scratch, with its own name, palette, and code.
 
 > ⚠️ **This is a proof of concept, vibe-coded in a few hours.** It works and the core loop is real, but it is rough and needs a lot of polish, testing, and hardening before it's anything like production quality. Treat it as a starting point, not a finished product.
@@ -138,4 +139,4 @@ why it looked like nothing was happening at all). If you still hit this:
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Custom Personal Use & Anti-AI License — see [LICENSE](LICENSE).
